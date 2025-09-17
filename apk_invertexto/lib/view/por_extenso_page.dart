@@ -10,8 +10,24 @@ class PorExtensoPage extends StatefulWidget {
 
 class _PorExtensoPageState extends State<PorExtensoPage> {
   String? campo;
-  String? resultado;
+  String moedaSelecionada = "BRL";
   final apiService = InvertextoService();
+
+  final List<String> moedas = [
+    "BRL",
+    "USD",
+    "EUR",
+    "GBP",
+    "JPY",
+    "ARS",
+    "MXN",
+    "UYU",
+    "PYG",
+    "BOB",
+    "CLP",
+    "COP",
+    "CUP",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -55,30 +71,51 @@ class _PorExtensoPageState extends State<PorExtensoPage> {
                 });
               },
             ),
+            SizedBox(height: 20),
+
+            DropdownButton<String>(
+              dropdownColor: Colors.black,
+              value: moedaSelecionada,
+              items: moedas.map((String moeda) {
+                return DropdownMenuItem<String>(
+                  value: moeda,
+                  child: Text(moeda, style: TextStyle(color: Colors.white)),
+                );
+              }).toList(),
+              onChanged: (novaMoeda) {
+                setState(() {
+                  moedaSelecionada = novaMoeda!;
+                });
+              },
+            ),
+
             Expanded(
               child: FutureBuilder(
-                future: apiService.convertePorExtenso(campo),
+                future: campo != null
+                    ? apiService.convertePorExtenso(campo, moedaSelecionada)
+                    : null,
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.none:
                       return Container(
-                        width: 200.0,
-                        height: 200.0,
+                        width: 200,
+                        height: 200,
                         alignment: Alignment.center,
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(
                             Colors.white,
                           ),
-                          strokeWidth: 8.0,
+                          strokeWidth: 5.0,
                         ),
                       );
                     default:
                       if (snapshot.hasError) {
-                        // Coloca tratamento de erro
-                        return Container();
-                      } else {
+                        return exibeErro(snapshot.error);
+                      } else if (snapshot.hasData) {
                         return exibeResultado(context, snapshot);
+                      } else {
+                        return Container();
                       }
                   }
                 },
@@ -91,12 +128,27 @@ class _PorExtensoPageState extends State<PorExtensoPage> {
   }
 
   Widget exibeResultado(BuildContext context, AsyncSnapshot snapshot) {
-    return Padding(padding: EdgeInsets.only(top: 10.0),
-    child: Text(
-      snapshot.data["text"] ?? '',
-      style: TextStyle(color: Colors.white, fontSize: 18),
-      softWrap: true,
-     ),
-  );
+    return Padding(
+      padding: EdgeInsets.only(top: 10.0),
+      child: Text(
+        snapshot.data["text"] ?? '',
+        style: TextStyle(color: Colors.white, fontSize: 18),
+        softWrap: true,
+      ),
+    );
+  }
+
+  Widget exibeErro(Object? erro) {
+    return Padding(
+      padding: EdgeInsets.only(top: 10.0), 
+      child: Text(
+        "Ocorreu um erro: $erro",
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: 18,
+        ), 
+        softWrap: true, 
+      ),
+    );
   }
 }

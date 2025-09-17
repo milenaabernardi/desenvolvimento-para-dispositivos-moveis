@@ -25,12 +25,12 @@ class _BuscaCepPageState extends State<BuscaCepPage> {
               'assets/imgs/invertexto.png',
               fit: BoxFit.contain,
               height: 40,
-            ),
+            )
           ],
         ),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () {
+          onPressed: (){
             Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -57,24 +57,25 @@ class _BuscaCepPageState extends State<BuscaCepPage> {
             ),
             Expanded(
               child: FutureBuilder(
-                future: apiService.buscaCep(campo),
+                future: apiService.buscaCEP(campo),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.none:
                       return Container(
-                        width: 200.0,
-                        height: 200.0,
+                        width: 200,
+                        height: 200,
                         alignment: Alignment.center,
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          strokeWidth: 8.0,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                          strokeWidth: 5.0,
                         ),
                       );
                     default:
                       if (snapshot.hasError) {
-                        // Coloca tratamento de erro
-                        return Container();
+                        return exibeErro(snapshot.error); 
                       } else {
                         return exibeResultado(context, snapshot);
                       }
@@ -90,8 +91,7 @@ class _BuscaCepPageState extends State<BuscaCepPage> {
 
   Widget exibeResultado(BuildContext context, AsyncSnapshot snapshot) {
     String enderecoCompleto = '';
-    if (snapshot.data != null) {
-      enderecoCompleto += "\n";
+    if(snapshot.data != null){
       enderecoCompleto += snapshot.data["street"] ?? "Rua não disponível";
       enderecoCompleto += "\n";
       enderecoCompleto += snapshot.data["neighborhood"] ?? "Bairro não disponível";
@@ -106,6 +106,20 @@ class _BuscaCepPageState extends State<BuscaCepPage> {
         enderecoCompleto,
         style: TextStyle(color: Colors.white, fontSize: 18),
         softWrap: true,
+      ),
+    );
+  }
+
+  Widget exibeErro(Object? erro) {
+    return Padding(
+      padding: EdgeInsets.only(top: 10.0), 
+      child: Text(
+        "Ocorreu um erro: $erro",
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: 18,
+        ), 
+        softWrap: true, 
       ),
     );
   }

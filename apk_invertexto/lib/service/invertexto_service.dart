@@ -36,4 +36,20 @@ class InvertextoService {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> validaEmail(String email) async {
+    try {
+      final url = Uri.parse('https://api.invertexto.com/v1/email-validator/$email?token=$_token');
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Erro ${response.statusCode} : ${response.body}');
+      }
+    } on SocketException {
+      throw Exception('Erro de conexão com a internet.');
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
