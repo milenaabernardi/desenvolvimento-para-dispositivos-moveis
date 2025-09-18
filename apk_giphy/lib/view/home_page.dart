@@ -1,4 +1,5 @@
 import 'package:apk_giphy/service/giphy_service.dart';
+import 'package:apk_giphy/view/gif_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,10 +27,11 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _loadingMore = true;
     });
+
     var newGifs = await giphyService.getGifs(_search, _offset);
     setState(() {
       _loadingMore = false;
-      _gifData.addAll(newGifs["data"]);
+      _gifData.addAll((newGifs["data"]));
     });
   }
 
@@ -47,14 +49,14 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: EdgeInsets.all(20),
             child: TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: "Pesquise aqui",
                 labelStyle: TextStyle(color: Colors.white),
                 border: OutlineInputBorder(),
               ),
-              style: const TextStyle(color: Colors.white, fontSize: 18.0),
+              style: TextStyle(color: Colors.white, fontSize: 18),
               textAlign: TextAlign.center,
               onSubmitted: (value) {
                 setState(() {
@@ -69,12 +71,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Expanded(
             child: _gifData.isEmpty && !_loadingMore && !_isSearching
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 5.0,
-                    ),
-                  )
+                ? _gifLoadingIndicator()
                 : _createGifTable(),
           ),
         ],
@@ -82,7 +79,63 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _gifLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        strokeWidth: 5.0,
+      ),
+    );
+  }
+
   Widget _createGifTable() {
-    return Container();
+    bool hasMoreGifs = _gifData.length < 25;
+
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: _gifData.length + 1,
+      padding: EdgeInsets.all(10),
+      itemBuilder: (context, index) {
+        if (index < _gifData.length) {
+          var gif = _gifData[index];
+          var gifUrl = gif["images"]["original"]["url"];
+          return GestureDetector(
+            child: Image.network(gifUrl, height: 300, fit: BoxFit.cover),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => GifPage(gif)),
+              );
+            },
+          );
+        } else {
+          return Container(
+            child: GestureDetector(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add, color: Colors.white, size: 70),
+                  Text(
+                    "Carregar mais...",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ],
+              ),
+              onTap: !_loadingMore ? (){
+                setState(() {
+                  _loadingMore = true;
+                  _offset += 25;
+                });
+                _loadGifs();
+              }:null
+            ),
+          );
+        }
+      },
+    );
   }
 }
