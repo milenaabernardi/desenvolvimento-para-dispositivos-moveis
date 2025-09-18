@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-String _key = "CHAVE";
+String _key = "r033plOhG39PQT9MT6Yq5i7xy7vcHxJq";
 
 class GiphyService {
 
