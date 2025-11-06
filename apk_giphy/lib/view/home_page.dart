@@ -14,7 +14,7 @@ class _HomePageState extends State<HomePage> {
   int _offset = 0;
   bool _loadingMore = false;
   bool _isSearching = false;
-  List _gifData = [];
+  final List _gifData = [];
   final GiphyService giphyService = GiphyService();
 
   @override
@@ -115,6 +115,13 @@ class _HomePageState extends State<HomePage> {
         } else {
           return Container(
             child: GestureDetector(
+              onTap: !_loadingMore ? (){
+                setState(() {
+                  _loadingMore = true;
+                  _offset += 25;
+                });
+                _loadGifs();
+              }:null,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -124,14 +131,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ],
-              ),
-              onTap: !_loadingMore ? (){
-                setState(() {
-                  _loadingMore = true;
-                  _offset += 25;
-                });
-                _loadGifs();
-              }:null
+              )
             ),
           );
         }

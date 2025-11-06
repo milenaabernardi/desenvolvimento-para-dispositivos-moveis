@@ -1,5 +1,6 @@
 import 'package:apk_auth/view/components/my_button.dart';
 import 'package:apk_auth/view/components/my_testfield.dart';
+import 'package:apk_auth/view/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
-
   final passwordController = TextEditingController();
 
   void signUserIn() async {
@@ -93,7 +93,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(width: 4),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
+                      },
                       child: Text(
                         'Registre-se Agora!',
                         style: TextStyle(

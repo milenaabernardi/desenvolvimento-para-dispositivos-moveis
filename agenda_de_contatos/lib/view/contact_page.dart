@@ -8,7 +8,8 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class ContactPage extends StatefulWidget {
   final Contact? contact;
-  ContactPage({Key? key, this.contact}) : super(key: key);
+  const ContactPage({super.key, this.contact});
+
 
   @override
   State<ContactPage> createState() => _ContactPageState();
@@ -16,7 +17,7 @@ class ContactPage extends StatefulWidget {
 
 class _ContactPageState extends State<ContactPage> {
   Contact? _editContact;
-  bool _userEdited = false;
+  final bool _userEdited = false;
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
