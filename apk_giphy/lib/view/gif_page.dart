@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class GifPage extends StatelessWidget {
   final Map _gifData;
 
-  GifPage(this._gifData);
+  const GifPage(this._gifData, {super.key});
 
   @override
   Widget build(BuildContext context) {
